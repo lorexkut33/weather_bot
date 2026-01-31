@@ -103,31 +103,27 @@ async def cmd_times(message: Message):
 async def cmd_weather(message: Message):
     data = load_cities()
     key = str(message.chat.id)
-    cities = data.get(key, [])
+    saved_cities = data.get(key, [])
 
-    # Разбираем аргументы: /weather [город...]
     parts = message.text.split(maxsplit=1)
 
-    # Если город не указан → показываем все
-    if len(parts) == 1:
-        if not cities:
-            return await message.answer(
-                "Города не настроены.\n"
-                "Используй /setcities Москва Наро-Фоминск"
-            )
-        lines = [get_weather(city) for city in cities]
-        text = "🌤 Текущая погода по всем городам:\n" + "\n".join(lines)
-        return await message.answer(text)
+    # Вариант 1: /weather <город> — разовый запрос, НИЧЕГО не сохраняем
+    if len(parts) == 2:
+        query_city = parts[1].strip()
+        if not query_city:
+            return await message.answer("Напиши город после команды: /weather Москва")
+        weather_text = get_weather(query_city)
+        return await message.answer(f"🌤 Погода сейчас:\n{weather_text}")
 
-    # Если город указан
-    query_city = parts[1].strip()
-
-    # Пытаемся найти точное совпадение среди сохранённых
-    if query_city not in cities:
+    # Вариант 2: просто /weather — по сохранённым городам
+    if not saved_cities:
         return await message.answer(
-            "Такой город не найден в списке.\n"
-            "У тебя сейчас: " + (", ".join(cities) if cities else "пусто")
+            "Города не настроены для авто‑рассылки.\n"
+            "Для разового просмотра используй: /weather Москва\n"
+            "Для рассылок задай список: /setcities Москва Наро-Фоминск"
         )
 
-    weather_text = get_weather(query_city)
-    await message.answer(f"🌤 Погода в выбранном городе:\n{weather_text}")
+    lines = [get_weather(city) for city in saved_cities]
+    text = "🌤 Текущая погода по сохранённым городам:\n" + "\n".join(lines)
+    await message.answer(text)
+
