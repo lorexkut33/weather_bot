@@ -120,6 +120,8 @@ async def cmd_weather(message: Message):
         else:
             await message.answer(f"🌤 Погода сейчас:\n{weather_text}")
 
+        return
+
 
     # Вариант 2: просто /weather — по сохранённым городам
     if not saved_cities:
