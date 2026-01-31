@@ -113,7 +113,13 @@ async def cmd_weather(message: Message):
         if not query_city:
             return await message.answer("Напиши город после команды: /weather Москва")
         weather_text = get_weather(query_city)
-        return await message.answer(f"🌤 Погода сейчас:\n{weather_text}")
+
+# если город не найден или ошибка — шлём только текст без "Погода сейчас"
+        if "город не найден" in weather_text or "ошибка" in weather_text:
+             await message.answer(weather_text)
+        else:
+            await message.answer(f"🌤 Погода сейчас:\n{weather_text}")
+
 
     # Вариант 2: просто /weather — по сохранённым городам
     if not saved_cities:
