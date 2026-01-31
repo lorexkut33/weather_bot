@@ -76,6 +76,7 @@ def get_weather(city: str) -> str:
     try:
         temp = data["main"]["temp"]
         desc = data["weather"][0]["description"]
+        icon = get_icon(desc)
         return f"{city}: {temp:.1f}°C, {desc.capitalize()} {icon}"
     except Exception:
         return f"{city}: неверный ответ API"
