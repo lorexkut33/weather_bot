@@ -37,6 +37,20 @@ def load_times() -> Dict[str, List[str]]:
 def save_times(data: Dict[str, List[str]]) -> None:
     _save_json(TIMES_FILE, data)
 
+def get_icon(desc: str) -> str:
+    d = desc.lower()
+    if "ясно" in d:
+        return "☀️"
+    if "облачно" in d:
+        return "☁️"
+    if "дожд" in d:
+        return "🌧️"
+    if "снег" in d:
+        return "🌨️"
+    if "гроза" in d:
+        return "⛈️"
+    return "🌡️"
+
 
 
 def get_weather(city: str) -> str:
@@ -62,6 +76,7 @@ def get_weather(city: str) -> str:
     try:
         temp = data["main"]["temp"]
         desc = data["weather"][0]["description"]
-        return f"{city}: {temp:.1f}°C, {desc.capitalize()}"
+        return f"{city}: {temp:.1f}°C, {desc.capitalize()} {icon}"
     except Exception:
         return f"{city}: неверный ответ API"
+
