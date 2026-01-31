@@ -64,10 +64,14 @@ def get_weather(city: str) -> str:
         r = requests.get(
             "https://api.openweathermap.org/data/2.5/weather",
             params=params,
-            timeout=5,
+            timeout=3,
         )
     except Exception:
         return f"{city}: ошибка запроса"
+
+    if r.status_code == 404:
+        # для OpenWeather это обычно { "cod": "404", "message": "city not found" }
+        return f"{city}: город не найден"
 
     if r.status_code != 200:
         return f"{city}: ошибка ({r.status_code})"
@@ -76,7 +80,7 @@ def get_weather(city: str) -> str:
     try:
         temp = data["main"]["temp"]
         desc = data["weather"][0]["description"]
-        icon = get_icon(desc)
+        icon = get_icon(desc)  # если у тебя уже есть функция иконок
         return f"{city}: {temp:.1f}°C, {desc.capitalize()} {icon}"
     except Exception:
         return f"{city}: неверный ответ API"
